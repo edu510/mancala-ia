@@ -27,29 +27,51 @@ public static class MinimaxAI
         if (depth == 0 || state.IsGameOver())
             return Evaluate(state);
 
+        int maxEval = int.MinValue;
+        int minEval = int.MaxValue;
         if (maximizingPlayer)
         {
-            int maxEval = int.MinValue;
             foreach (int move in GetValidMoves(state))
             {
                 BoardState newState = SimulateMove(state, move);
-                int eval = Minimax(newState, depth - 1, alpha, beta, false);
-                maxEval = Mathf.Max(maxEval, eval);
-                alpha = Mathf.Max(alpha, eval);
-                if (beta <= alpha) break;
+                if (newState.isPlayer1Turn != state.isPlayer1Turn)
+                {
+                    int eval = Minimax(newState, depth - 1, alpha, beta, false);
+                    maxEval = Mathf.Max(maxEval, eval);
+                    alpha = Mathf.Max(alpha, eval);
+                    if (beta <= alpha) break;
+                }
+                else
+                {
+                    int eval = Minimax(newState, depth - 1, alpha, beta, true);
+                    minEval = Mathf.Min(minEval, eval);
+                    beta = Mathf.Min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+                
             }
             return maxEval;
         }
         else
         {
-            int minEval = int.MaxValue;
             foreach (int move in GetValidMoves(state))
             {
                 BoardState newState = SimulateMove(state, move);
-                int eval = Minimax(newState, depth - 1, alpha, beta, true);
-                minEval = Mathf.Min(minEval, eval);
-                beta = Mathf.Min(beta, eval);
-                if (beta <= alpha) break;
+                if (newState.isPlayer1Turn != state.isPlayer1Turn)
+                {
+                    int eval = Minimax(newState, depth - 1, alpha, beta, true);
+                    minEval = Mathf.Min(minEval, eval);
+                    beta = Mathf.Min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+                else
+                {
+                    int eval = Minimax(newState, depth - 1, alpha, beta, false);
+                    maxEval = Mathf.Max(maxEval, eval);
+                    alpha = Mathf.Max(alpha, eval);
+                    if (beta <= alpha) break;
+                }
+                
             }
             return minEval;
         }
@@ -65,19 +87,25 @@ public static class MinimaxAI
         return valid;
     }
 
-    public static BoardState SimulateMove(BoardState state, int pit)
+    public static BoardState SimulateMove(BoardState state, int pit, bool highlight=false)
     {
+        var gameController = Object.FindFirstObjectByType<GameController>();
+        if(highlight) gameController.pitTexts[pit].GetComponentInParent<Highlighter>().Highlight();
         BoardState newState = state.Clone();
         int stones = newState.pits[pit];
         newState.pits[pit] = 0;
         int index = pit;
 
+        int count = 0;
+        
         while (stones > 0)
         {
+            count++;
             index = (index + 1) % 14;
             if ((state.isPlayer1Turn && index == 13) || (!state.isPlayer1Turn && index == 6))
                 continue;
             newState.pits[index]++;
+            if(highlight) gameController.pitTexts[index].GetComponentInParent<Highlighter>().Highlight(count);
             stones--;
         }
 
@@ -97,11 +125,27 @@ public static class MinimaxAI
         bool extraTurn = (state.isPlayer1Turn && index == 6) || (!state.isPlayer1Turn && index == 13);
         if (!extraTurn) newState.isPlayer1Turn = !newState.isPlayer1Turn;
 
+        if (newState.IsGameOver())
+        {
+            if(highlight) Debug.Log("JOGO ACABOU");
+            
+            for (int i = 0; i <= 5; i++)
+            {
+                newState.pits[6] += newState.pits[i];
+                newState.pits[i] = 0;
+            }
+            for (int i = 7; i <= 12; i++)
+            {
+                newState.pits[13] -= newState.pits[i];
+                newState.pits[i] = 0;
+            }
+        }
+
         return newState;
     }
 
     static int Evaluate(BoardState state)
     {
-        return state.pits[6] - state.pits[13];
+        return state.pits[13] - state.pits[6];
     }
 }

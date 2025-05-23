@@ -8,44 +8,62 @@ public class GameController : MonoBehaviour
     public TMP_Text[] pitTexts;
     public TMP_Text turnText;
 
-    private BoardState state;
+    [SerializeField] private float thinkingDelay = 2;
+    [SerializeField] private int depth = 6;
+    
+    private BoardState _state;
 
     void Start()
     {
-        state = new BoardState();
+        _state = new BoardState();
         UpdateUI();
     }
 
     public void OnPitClick(int pit)
     {
-        if (!state.isPlayer1Turn || state.pits[pit] == 0) return;
+        if (!_state.isPlayer1Turn || _state.pits[pit] == 0) return;
 
-        state = MinimaxAI.SimulateMove(state, pit);
+        int start = _state.isPlayer1Turn ? 0 : 7;
+        int end = _state.isPlayer1Turn ? 6 : 13;
+        
+        if (!(pit >= start && pit <= end)) return;
+        
+        _state = MinimaxAI.SimulateMove(_state, pit, true);
         UpdateUI();
 
-        if (!state.isPlayer1Turn && !state.IsGameOver())
-            Invoke(nameof(AIMove), 1f);
+        if (_state.IsGameOver())
+        {
+            Debug.Log("Player PAROU");
+        }
+        
+        if (!_state.isPlayer1Turn && !_state.IsGameOver())
+            Invoke(nameof(AIMove), thinkingDelay);
     }
 
     void AIMove()
     {
-        int move = MinimaxAI.GetBestMove(state, 6);
+        int move = MinimaxAI.GetBestMove(_state, depth);
         if (move == -1) return;
 
-        state = MinimaxAI.SimulateMove(state, move);
+        _state = MinimaxAI.SimulateMove(_state, move, true);
         UpdateUI();
 
-        if (!state.isPlayer1Turn && !state.IsGameOver())
-            Invoke(nameof(AIMove), 1f);
+        if (_state.IsGameOver())
+        {
+            Debug.Log("IA PAROU");
+        }
+        
+        if (!_state.isPlayer1Turn && !_state.IsGameOver())
+            Invoke(nameof(AIMove), thinkingDelay);
     }
 
     void UpdateUI()
     {
         for (int i = 0; i < 14; i++)
         {
-            pitTexts[i].text = state.pits[i].ToString();
+            pitTexts[i].text = _state.pits[i].ToString();
         }
 
-        turnText.text = state.isPlayer1Turn ? "Your Turn" : "AI Thinking...";
+        turnText.text = _state.isPlayer1Turn ? "Your Turn" : "AI Thinking...";
     }
 }

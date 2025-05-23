@@ -138,10 +138,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 596981091}
     m_Modifications:
-    - target: {fileID: 114764765762753516, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 50
-      objectReference: {fileID: 0}
     - target: {fileID: 1663859558039216403, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -221,10 +217,6 @@ PrefabInstance:
     - target: {fileID: 1663859558039216403, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169237131201890289, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
-      propertyPath: m_text
-      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 6432142831269080526, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_Name
@@ -902,10 +894,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 596981091}
     m_Modifications:
-    - target: {fileID: 114764765762753516, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 50
-      objectReference: {fileID: 0}
     - target: {fileID: 1663859558039216403, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -985,10 +973,6 @@ PrefabInstance:
     - target: {fileID: 1663859558039216403, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2169237131201890289, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
-      propertyPath: m_text
-      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 6432142831269080526, guid: f32d8fea256aaf54d914e8f77189dd3f, type: 3}
       propertyPath: m_Name
@@ -2337,6 +2321,8 @@ MonoBehaviour:
   - {fileID: 26471210}
   - {fileID: 939415289}
   turnText: {fileID: 2002006726}
+  thinkingDelay: 2
+  depth: 9
 --- !u!4 &1520344213
 Transform:
   m_ObjectHideFlags: 0
