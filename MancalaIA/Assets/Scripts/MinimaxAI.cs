@@ -3,6 +3,11 @@ using UnityEngine;
 
 public static class MinimaxAI
 {
+    private static int Evaluate(BoardState state)
+    {
+        return state.pits[13] - state.pits[6];
+    }
+    
     public static int GetBestMove(BoardState state, int depth)
     {
         int bestValue = int.MinValue;
@@ -22,7 +27,7 @@ public static class MinimaxAI
         return bestMove;
     }
 
-    public static int Minimax(BoardState state, int depth, int alpha, int beta, bool maximizingPlayer)
+    private static int Minimax(BoardState state, int depth, int alpha, int beta, bool maximizingPlayer)
     {
         if (depth == 0 || state.IsGameOver())
             return Evaluate(state);
@@ -77,7 +82,7 @@ public static class MinimaxAI
         }
     }
 
-    public static List<int> GetValidMoves(BoardState state)
+    private static List<int> GetValidMoves(BoardState state)
     {
         List<int> valid = new List<int>();
         int start = state.isPlayer1Turn ? 0 : 7;
@@ -119,6 +124,7 @@ public static class MinimaxAI
             newState.pits[store] += newState.pits[opposite] + 1;
             newState.pits[opposite] = 0;
             newState.pits[index] = 0;
+            if(highlight) Debug.Log("CAPTURE!");
         }
 
         // Extra turn
@@ -136,16 +142,11 @@ public static class MinimaxAI
             }
             for (int i = 7; i <= 12; i++)
             {
-                newState.pits[13] -= newState.pits[i];
+                newState.pits[13] += newState.pits[i];
                 newState.pits[i] = 0;
             }
         }
 
         return newState;
-    }
-
-    static int Evaluate(BoardState state)
-    {
-        return state.pits[13] - state.pits[6];
     }
 }
