@@ -8,14 +8,14 @@ public class GameController : MonoBehaviour
     public TMP_Text[] pitTexts;
     public TMP_Text turnText;
 
-    [SerializeField] private float thinkingDelay = 2;
-    [SerializeField] private int depth = 6;
+    [SerializeField] private float highlightTime = .4f;
     
     private BoardState _state;
 
     void Start()
     {
         _state = new BoardState();
+
         UpdateUI();
     }
 
@@ -27,34 +27,38 @@ public class GameController : MonoBehaviour
         int end = _state.isPlayer1Turn ? 6 : 13;
         
         if (!(pit >= start && pit <= end)) return;
-        
-        _state = MinimaxAI.SimulateMove(_state, pit, true);
+
+        int oldPitCount = _state.pits[pit];
+        _state = MinimaxAI.SimulateMove(_state, pit, true, highlightTime);
         UpdateUI();
 
         if (_state.IsGameOver())
         {
             Debug.Log("Player PAROU");
+            ShowWinner();
         }
         
         if (!_state.isPlayer1Turn && !_state.IsGameOver())
-            Invoke(nameof(AIMove), thinkingDelay);
+            Invoke(nameof(AIMove), highlightTime * (oldPitCount + 3));
     }
 
     void AIMove()
     {
-        int move = MinimaxAI.GetBestMove(_state, depth);
+        int move = MinimaxAI.GetBestMove(_state, SliderInputController.SelectedValue);
         if (move == -1) return;
 
-        _state = MinimaxAI.SimulateMove(_state, move, true);
+        int oldPitCount = _state.pits[move];
+        _state = MinimaxAI.SimulateMove(_state, move, true, highlightTime);
         UpdateUI();
 
         if (_state.IsGameOver())
         {
             Debug.Log("IA PAROU");
+            ShowWinner();
         }
         
         if (!_state.isPlayer1Turn && !_state.IsGameOver())
-            Invoke(nameof(AIMove), thinkingDelay);
+            Invoke(nameof(AIMove), highlightTime * (oldPitCount + 3));
     }
 
     void UpdateUI()
@@ -63,7 +67,23 @@ public class GameController : MonoBehaviour
         {
             pitTexts[i].text = _state.pits[i].ToString();
         }
-
+        
         turnText.text = _state.isPlayer1Turn ? "Your Turn" : "AI Thinking...";
+    }
+
+    void ShowWinner()
+    {
+        if (_state.pits[6] > _state.pits[13])
+        {
+            turnText.text = "Você ganhou!";
+        }
+        else if (_state.pits[6] == _state.pits[13])
+        {
+            turnText.text = "Empatou!";
+        }
+        else
+        {
+            turnText.text = "IA ganhou!";
+        }
     }
 }

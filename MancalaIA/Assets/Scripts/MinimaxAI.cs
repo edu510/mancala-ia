@@ -92,10 +92,10 @@ public static class MinimaxAI
         return valid;
     }
 
-    public static BoardState SimulateMove(BoardState state, int pit, bool highlight=false)
+    public static BoardState SimulateMove(BoardState state, int pit, bool highlight = false, float highlightTime = 0)
     {
         var gameController = Object.FindFirstObjectByType<GameController>();
-        if(highlight) gameController.pitTexts[pit].GetComponentInParent<Highlighter>().Highlight();
+        if(highlight) gameController.pitTexts[pit].GetComponentInParent<Highlighter>().Highlight(highlightTime, 0, 0);
         BoardState newState = state.Clone();
         int stones = newState.pits[pit];
         newState.pits[pit] = 0;
@@ -110,7 +110,7 @@ public static class MinimaxAI
             if ((state.isPlayer1Turn && index == 13) || (!state.isPlayer1Turn && index == 6))
                 continue;
             newState.pits[index]++;
-            if(highlight) gameController.pitTexts[index].GetComponentInParent<Highlighter>().Highlight(count);
+            if(highlight) gameController.pitTexts[index].GetComponentInParent<Highlighter>().Highlight(highlightTime, count, newState.pits[index]);
             stones--;
         }
 
@@ -124,7 +124,6 @@ public static class MinimaxAI
             newState.pits[store] += newState.pits[opposite] + 1;
             newState.pits[opposite] = 0;
             newState.pits[index] = 0;
-            if(highlight) Debug.Log("CAPTURE!");
         }
 
         // Extra turn
